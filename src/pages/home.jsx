@@ -2,6 +2,7 @@ import { useState } from "react";
 import Carousel from "../components/carousel";
 import KategoriCarousel from "../components/kategoriCarousel";
 import Header from "../components/navbar";
+import { Link } from "react-router-dom";
 
 const produkData = [
   { id: 1, nama: "Alat Pelindung Diri", kategori: "unggulan", foto: "/products/apd.jpg", deskripsi: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget rhoncus turpis", harga: "Rp. 100.000" },
@@ -59,27 +60,28 @@ const Home = () => {
       </div> */}
      {/* 4 Alasan */}
      <div className="flex justify-center mt-10">
-        <div className="border-l border-y border-gray-200 w-64 h-40 flex flex-col justify-center items-center p-4 text-center rounded-l-lg">
+        <div className="border-l border-y border-gray-300 w-64 h-40 flex flex-col justify-center items-center p-4 text-center rounded-l-lg bg-gray-800 text-white hover:bg-yellow-500 hover:text-black transition duration-300">
           <p className="text-sm font-medium">Semua Produk K3 Mart</p>
           <h2 className="font-bold text-xl">Kualitas Terjamin</h2>
           <p className="text-sm">Lolos Uji Quality Control</p>
         </div>
-        <div className="w-64 h-40 border-y border-gray-200 flex flex-col justify-center items-center p-4 text-center">
+        <div className="w-64 h-40 border-y border-gray-300 flex flex-col justify-center items-center p-4 text-center hover:bg-yellow-500 hover:text-white transition duration-300">
           <p className="text-sm font-medium">Semua Produk K3 Mart</p>
           <h2 className="font-bold text-xl">Kualitas Terjamin</h2>
           <p className="text-sm">Lolos Uji Quality Control</p>
         </div>
-        <div className="w-64 h-40 border-y border-gray-200 flex flex-col justify-center items-center p-4 text-center">
+        <div className="w-64 h-40 border-y border-gray-300 flex flex-col justify-center items-center p-4 text-center bg-gray-800 text-white hover:bg-yellow-500 hover:text-black transition duration-300">
           <p className="text-sm font-medium">Semua Produk K3 Mart</p>
           <h2 className="font-bold text-xl">Kualitas Terjamin</h2>
           <p className="text-sm">Lolos Uji Quality Control</p>
         </div>
-        <div className="w-64 h-40 border-r border-y border-gray-200 flex flex-col justify-center items-center p-4 text-center rounded-r-lg">
+        <div className="w-64 h-40 border-r border-y border-gray-300 flex flex-col justify-center items-center p-4 text-center rounded-r-lg hover:bg-yellow-500 hover:text-white transition duration-300">
           <p className="text-sm font-medium">Semua Produk K3 Mart</p>
           <h2 className="font-bold text-xl">Kualitas Terjamin</h2>
           <p className="text-sm">Lolos Uji Quality Control</p>
         </div>
       </div>
+
 
       {/* Kategori Carousel */}
       <div className="flex max-w-7xl mx-auto p-4 my-10">
@@ -93,7 +95,7 @@ const Home = () => {
               rhoncus turpis. Nam eu sodales lacus. Mauris dapibus, nunc sit
               amet varius faucibus, nisi sem tristique metus.
             </p>
-            <button className="bg-yellow-500 text-white mt-4 font-bold py-2 px-4 rounded">
+            <button style={{ backgroundColor: "#0f4c5c" }} className="text-white mt-4 font-bold py-2 px-4 rounded">
               Belanja Sekarang
             </button>
           </div>
@@ -109,22 +111,29 @@ const Home = () => {
         <div className="relative">
           <div className="flex overflow-hidden mx-20 mt-10 mb-10">
             {produkUnggulan.slice(currentIndexUnggulan, currentIndexUnggulan + itemsToShowUnggulan).map(product => (
-              <div key={product.id} className="card w-64 h-100 shadow-lg p-4 bg-white rounded-lg mx-2">
+              <Link to={`/catalog/${product.id}`} key={product.id} className="card shadow-lg p-4 bg-white rounded-lg mx-2">
+              <div className="relative group">
                 <img
                   src={product.foto}
                   alt={product.nama}
                   className="h-48 w-full object-cover rounded-md mb-4"
                 />
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md">
+                    <p className="text-white text-lg font-semibold">Lihat Produk</p>
+                </div>
+            </div>
                 <h3 className="font-bold text-lg text-gray-800">{product.nama}</h3>
                 <p className="text-gray-600">{product.deskripsi}</p>
-                <p className="text-orange-600 font-semibold text-lg mt-2">{product.harga}</p>
-              </div>
+                <p style={{ color: "#0f4c5c" }} className="font-semibold text-lg mt-2">{product.harga}</p>
+
+              </Link>
             ))}
           </div>
           <button
             onClick={handlePrevUnggulan}
             disabled={currentIndexUnggulan === 0}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-yellow-500 text-white p-2 rounded-md mx-16"
+            style={{ backgroundColor: "#0f4c5c" }}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-md mx-16"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
@@ -134,7 +143,8 @@ const Home = () => {
           <button
             onClick={handleNextUnggulan}
             disabled={currentIndexUnggulan >= produkUnggulan.length - itemsToShowUnggulan}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-yellow-500 text-white p-2 rounded-md mx-16"
+            style={{ backgroundColor: "#0f4c5c" }}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-md mx-16"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
@@ -152,7 +162,7 @@ const Home = () => {
             <h1 className="text-left font-bold text-3xl mb-3 py-5">
               Semarak Utamakan
             </h1>
-            <h1 className="text-left font-bold text-3xl mb-3 -mt-8 text-yellow-700">
+            <h1 style={{ color: "#0f4c5c" }} className="text-left font-bold text-3xl mb-3 -mt-8 ">
                 Keselamatan Kesehatan Kerja
                 </h1>
             <p className="text-left mb-4">
@@ -167,7 +177,7 @@ const Home = () => {
                 <h1 className="text-left font-bold text-3xl mb-3 py-5">
                 #Safety&Trendy Mendukung
                 </h1>
-                <h1 className="text-left font-bold text-3xl mb-3 -mt-7 text-yellow-700">
+                <h1 style={{ color: "#0f4c5c" }} className="text-left font-bold text-3xl mb-3 -mt-7">
                 Kesehatan Keselamatan Kerja
                 </h1>
                 <p className="text-left mb-4">
@@ -186,22 +196,29 @@ const Home = () => {
         <div className="relative">
           <div className="flex overflow-hidden mx-20 mt-10 mb-10">
             {produkTerlaris.slice(currentIndexTerlaris, currentIndexTerlaris + itemsToShowTerlaris).map(product => (
-              <div key={product.id} className="card w-64 h-100 shadow-lg p-4 bg-white rounded-lg mx-2">
+              <Link to={`/catalog/${product.id}`} key={product.id} className="card w-64 h-100 shadow-lg p-4 bg-white rounded-lg mx-2">
+              <div className="relative group">
                 <img
                   src={product.foto}
                   alt={product.nama}
                   className="h-48 w-full object-cover rounded-md mb-4"
                 />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md">
+                      <p className="text-white text-lg font-semibold">Lihat Produk</p>
+                  </div>
+              </div>
                 <h3 className="font-bold text-lg text-gray-800">{product.nama}</h3>
                 <p className="text-gray-600">{product.deskripsi}</p>
-                <p className="text-orange-600 font-semibold text-lg mt-2">{product.harga}</p>
-              </div>
+                <p style={{ color: "#0f4c5c" }} className="font-semibold text-lg mt-2">{product.harga}</p>
+              
+              </Link>
             ))}
           </div>
           <button
             onClick={handlePrevTerlaris}
             disabled={currentIndexTerlaris === 0}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-yellow-500 text-white p-2 rounded-md mx-16"
+            style={{ backgroundColor: "#0f4c5c" }} 
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-md mx-16"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
@@ -211,7 +228,8 @@ const Home = () => {
           <button
             onClick={handleNextTerlaris}
             disabled={currentIndexTerlaris >= produkUnggulan.length - itemsToShowTerlaris}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-yellow-500 text-white p-2 rounded-md mx-16"
+            style={{ backgroundColor: "#0f4c5c" }} 
+            className="absolute right-0 top-1/2 transform -translate-y-1/2  text-white p-2 rounded-md mx-16"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
@@ -222,17 +240,17 @@ const Home = () => {
       </div>
 
       {/* Belanja Sekarang */}
-      <div className="mt-10 flex justify-between items-center mx-20 h-20 bg-yellow-500 px-8 rounded">
-        <h1 className="text-2xl font-bold  ml-10">
+      <div style={{ backgroundColor: "#0f4c5c" }}   className="mt-10 flex justify-between items-center mx-20 h-20  px-8 rounded">
+        <h1  className="text-2xl text-white font-bold  ml-10">
             Segera Dapatkan Safety Product Pilihan Anda #Safety&Trendy
         </h1>
-        <button className="bg-gray-800 text-white p-3 rounded mr-10">
+        <button  className="bg-yellow-500 font-semibold p-3 rounded mr-10">
             Belanja Sekarang
         </button>
     </div>
 
     {/* Footer */}
-    <div className="bg-gray-800 mt-16 text-white py-10">
+    <div style={{ backgroundColor: "#0f4c5c" }} className="text-white mt-16 py-10">
   <div className="container mx-auto px-6">
     <div className="flex flex-wrap justify-between">
 
@@ -255,7 +273,7 @@ const Home = () => {
             <span className="font-semibold">Telepon:</span> +62 123 456 789
           </li>
           <li className="mb-2">
-            <span className="font-semibold">Alamat:</span> Jalan Kesehatan No.1, Jakarta
+            <span className="font-semibold">Alamat:</span> Jl. Ketintang Baru No. 156 Telkom University
           </li>
         </ul>
       </div>

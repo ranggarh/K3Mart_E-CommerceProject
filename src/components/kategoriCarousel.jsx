@@ -3,13 +3,13 @@ import { useState } from "react";
 const KategoriCarousel = () => {
   const slides = [
     {
-      image: "https://png.pngtree.com/thumb_back/fh260/back_our/20190614/ourmid/pngtree-taobao-carousel-background-image-image_122191.jpg",
+      image: "/products/apd3.jpg",
       title: "Top Tech Gadgets",
       subtitle: "Latest Collection",
       description: "Discover our new arrivals in tech with 30% off!",
     },
     {
-      image: "https://source.unsplash.com/random/800x400?gadgets",
+      image: "/products/shoes.jpg",
       title: "Innovative Gadgets",
       subtitle: "Shop Now",
       description: "The latest in tech is just a click away.",
