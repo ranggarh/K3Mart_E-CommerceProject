@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getCartItems, increaseCartItem, decreaseCartItem } from '../utils/cartUtils';
+import { getToken } from '../utils/authUtils';
+import Swal from 'sweetalert2';
 
 const Cart = ({ isOpen, onClose }) => {
     const [cartItems, setCartItems] = useState(getCartItems());
+    const navigate = useNavigate();
 
     const handleIncrease = (id) => {
         increaseCartItem(id);
@@ -14,6 +17,27 @@ const Cart = ({ isOpen, onClose }) => {
     const handleDecrease = (id) => {
         decreaseCartItem(id);
         setCartItems([...getCartItems()]); // Update state setelah mengurangi item
+    };
+
+    const handleCheckout = () => {
+        const token = getToken();
+        if (token) {
+            navigate('/checkout', { state: { cartItems } });
+        } else {
+            console.log('SweetAlert akan dijalankan');
+            Swal.fire({
+                title: 'Silahkan Login Terlebih Dahulu',
+                text: 'Anda perlu login untuk melanjutkan ke checkout.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate('/auth/login');
+                }
+            });
+        }
     };
 
     // Hitung total keranjang
@@ -71,16 +95,13 @@ const Cart = ({ isOpen, onClose }) => {
                         <h3 className="font-semibold">Rp. {calculateTotal().toLocaleString()}</h3>
                     </div>
                 )}
-                <Link 
-                    to={{
-                        pathname: "/checkout",
-                        state: { cartItems }
-                    }}
+                <button 
+                    onClick={handleCheckout}
+                    style={{ backgroundColor: "#0f4c5c" }} 
+                    className="mt-4 w-full hover:bg-blue-700 text-white py-2 px-4 rounded"
                 >
-                    <button style={{ backgroundColor: "#0f4c5c" }} className="mt-4 w-full hover:bg-blue-700 text-white py-2 px-4 rounded">
-                        Checkout
-                    </button>
-                </Link>
+                    Checkout
+                </button>
             </div>
         </div>
     );

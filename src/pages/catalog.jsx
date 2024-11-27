@@ -94,7 +94,7 @@ const Katalog = () => {
                 </div>
 
                 {/* Konten Katalog */}
-                <div className="w-3/4 h-screen">
+                <div className="w-3/4 -ml-5 h-screen">
                     <div className="flex">
                         <div style={{ backgroundColor: "#0f4c5c" }} className="flex ml-10 mt-10 border border-gray-300 rounded w-3/4 my-auto">
                             <input className="w-full p-2 mr-2 " type="text" placeholder="Cari Produk..." value={searchTerm}

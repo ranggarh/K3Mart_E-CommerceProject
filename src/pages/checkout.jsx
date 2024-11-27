@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Header from "../components/navbar";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import Modal from "../components/modal";
+import axios from "axios";
 
 const Checkout = () => {
     const shippingOptions = [
@@ -13,21 +15,33 @@ const Checkout = () => {
     ];
 
     const paymentOptions = [
-      { id: 1, provider: "Gopay", image: "/products/gopay.jpg" },
-      { id: 2, provider: "OVO", image: "/products/ovo.jpg" },
-      { id: 3, provider: "DANA", image: "/products/dana.jfif" },
-      { id: 4, provider: "Bank Transfer", image: "/products/bank.png" },
+      { id: 1, provider: "BNI Virtual Account", image: "/products/bni.webp" },
+      { id: 2, provider: "BCA Virtual Account", image: "/products/bca.webp" },
+      { id: 3, provider: "Mandiri Virtual Account", image: "/products/mandiri.png" },
+      { id: 4, provider: "BRI Virtual Account", image: "/products/bri.webp" },
   ];
-
+  const navigate = useNavigate();
     const [cart, setCart] = useState([]);
     const [selectedShipping, setSelectedShipping] = useState(null);
     const [selectedPayment, setSelectedPayment] = useState(null);
+    const location = useLocation();
+    const productFromDetail = location.state?.product;
+
+    const [showModal, setShowModal] = useState(false);
+
+    // Fungsi untuk membuka dan menutup modal
+    const openModal = () => setShowModal(true);
+    const closeModal = () => setShowModal(false)
 
     // Ambil data cart dari localStorage
     useEffect(() => {
-        const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-        setCart(storedCart);
-    }, []);
+        if (productFromDetail) {
+            setCart([productFromDetail]);
+        } else {
+            const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+            setCart(storedCart);
+        }
+    }, [productFromDetail]);
 
     // Fungsi untuk menghitung total harga semua item
     const calculateTotal = () => {
@@ -39,20 +53,62 @@ const Checkout = () => {
         return selectedShipping ? selectedShipping.price : 0;
     };
 
+    const handleTransaction = async () => {
+        const token = localStorage.getItem("token");
+        if (!selectedShipping || !selectedPayment || cart.length === 0) {
+            alert("Pilih opsi pengiriman, metode pembayaran, dan pastikan keranjang tidak kosong.");
+            return;
+        }
+    
+        try {
+            const response = await axios.post(
+                'http://localhost:5000/api/transaksi/create',
+                {
+                    products: cart.map((item) => ({ id_produk: item.id, quantity: item.quantity })),
+                    selectedShipping,
+                    selectedPayment: paymentOptions.find(option => option.id === selectedPayment.id), // Pastikan selectedPayment adalah objek yang benar
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+    
+            if (response.status === 201) {
+                alert("Transaksi berhasil!");
+                localStorage.removeItem("cart");
+                navigate("/payment", {
+                    state: {
+                        cart,
+                        selectedShipping,
+                        selectedPayment: paymentOptions.find(option => option.id === selectedPayment.id),
+                        total: calculateTotal() + calculateShipping(),
+                    },
+                });
+            }
+        } catch (error) {
+            console.error("Gagal membuat transaksi:", error);
+            alert("Terjadi kesalahan saat memproses transaksi.");
+        }
+    };
+    
+    
+    
+    
+
     return (
         <>
             <Header />
             <div className="flex h-full">
             
                 <div className="w-3/4 bg-gray-100 p-10">
-                <Link to={'/catalog'}>
-                    <div className='flex'>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 -mt-5 ml-10 ">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                        </svg>
-                        <h1 className='-mt-5 mx-4 font-semibold'>Kembali</h1>
-                    </div>
-                </Link>
+                <button onClick={() => navigate(-1)} className='flex'>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 ml-10 mt-5 ">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                <h1 className='mt-5 mx-4 font-semibold'>Kembali</h1>
+                </button>
                     {/* Alamat */}
                     <div className="mt-5 w-full h-fit bg-white rounded-lg p-5">
                         <h1 className="text-lg font-bold ml-5 mb-3">Alamat</h1>
@@ -63,7 +119,7 @@ const Checkout = () => {
                             <h1 className="ml-3 font-semibold">Rangga Raditya Hariyanto</h1>
                         </div>
                         <p className="ml-5 mt-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, molestiae ipsam earum quos.</p>
-                        <div style={{ backgroundColor: "#0f4c5c" }}  className="p-2 ml-5 mt-2 text-white text-sm font-semibold rounded-lg w-fit">
+                        <div style={{ backgroundColor: "#0f4c5c" }}  className="p-2 ml-5 mt-2 text-white text-sm font-semibold rounded-lg w-fit hover:shadow-lg cursor-pointer">
                             <p>Ganti Alamat</p>
                         </div>
                     </div>
@@ -81,7 +137,9 @@ const Checkout = () => {
                                             <h1 className="mb-2 font-semibold mr-5">Rp {item.harga.toLocaleString("id-ID")}</h1>
                                         </div>
                                         <p className="ml-3 font-semibold text-gray-400 text-sm">Jumlah: {item.quantity}</p>
-                                        <p className="ml-3 font-semibold text-gray-400 text-sm">Subtotal: Rp {(item.harga * item.quantity).toLocaleString("id-ID")}</p>
+                                        <p className="ml-3 font-semibold text-gray-400 text-sm">Ukuran: {item.size || "-"}  </p>
+                                        <p className="ml-3 font-semibold text-gray-400 text-sm">Varian: {item.varian || "-"}</p>
+                                        
                                     </div>
                                 </div>
                             ))
@@ -125,30 +183,43 @@ const Checkout = () => {
                           <p className=" font-semibold">Total:</p>
                           <p className="font-semibold">Rp {(calculateTotal() + calculateShipping()).toLocaleString("id-ID")}</p>
                         </div>
-                        <Link to={"/payment"}>
-                        <div style={{ backgroundColor: "#0f4c5c" }}  className="w-full flex justify-center items-center py-3 text-white bg-blue-500 rounded-lg mt-3 hover:shadow-lg"><p>Bayar Sekarang</p></div>
-                        </Link>
+                        
+                        <button onClick={handleTransaction} style={{ backgroundColor: "#0f4c5c" }}  className="w-full flex justify-center items-center py-3 text-white bg-blue-500 rounded-lg mt-3 hover:shadow-lg"><p>Bayar Sekarang</p></button>
+                        
                     </div>
+
+                    <Modal
+                    cart={cart}
+                    selectedShipping={selectedShipping}
+                    selectedPayment={selectedPayment}
+                    paymentOptions={paymentOptions}
+                    isOpen={showModal}
+                    onClose={closeModal}
+                    />
 
                     <div className="mt-5 -ml-5 w-full h-fit bg-white rounded-lg p-6">
                       <h1 className="text-lg font-bold ml-5 mb-5">Metode Pembayaran</h1>
                         {/* Payment Options */}
                         {paymentOptions.map((option) => (
-                            <div key={option.id} className="flex border-b border-black-300 p-1 items-center justify-between mx-5 mb-3">
-                                <div className="flex items-center">
-                                    <img src={option.image} alt={option.provider} className="w-8 h-8 mr-3 rounded" />
-                                    <p className="font-semibold">{option.provider}</p>
+                            <label key={option.id}>
+                                <div className="flex border-b border-black-300 p-1 items-center justify-between mx-2 mb-3">
+                                    <div className="flex items-center">
+                                        <img src={option.image} alt={option.provider} className="w-8 h-8 mr-3 rounded" />
+                                        <p className="font-semibold">{option.provider}</p>
+                                    </div>
+                                    <input
+                                        type="radio"
+                                        name="payment"
+                                        value={option.id}
+                                        checked={selectedPayment?.id === option.id}
+                                        onChange={() => setSelectedPayment(option)} // Simpan objek yang benar
+                                        className="form-radio text-blue-500"
+                                    />
                                 </div>
-                                <input
-                                    type="radio"
-                                    name="payment"
-                                    value={option.id}
-                                    checked={selectedPayment === option.id}
-                                    onChange={() => setSelectedPayment(option.id)}
-                                    className="form-radio text-blue-500"
-                                />
-                            </div>
+                            </label>
                         ))}
+
+
                     </div>
 
                    
@@ -162,3 +233,5 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+
